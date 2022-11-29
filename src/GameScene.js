@@ -17,7 +17,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('sky', 'assets/sky.png')
+        this.load.image('floor', 'assets/Steal.png')
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
@@ -29,75 +29,54 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(400, 300, 'sky')
+        this.add.image(100, 0, 'floor')
+        this.add.image(400, 0, 'floor')
+        this.add.image(700, 0, 'floor')
+        this.add.image(100, 300, 'floor')
+        this.add.image(400, 300, 'floor')
+        this.add.image(700, 300, 'floor')
+        this.add.image(100, 600, 'floor')
+        this.add.image(400, 600, 'floor')
+        this.add.image(700, 600, 'floor')
+
 
         const platforms = this.createPlatforms()
         this.player = this.createPlayer()
-        const stars = this.createStars()
-
-        this.scoreLabel = this.createScoreLabel(16, 16, 0)
 
         this.physics.add.collider(this.player, platforms)
-        this.physics.add.collider(stars, platforms)
 
-        this.physics.add.overlap(this.player, stars, this.collectStar, null, this)
+        this.cursors = this.input.keyboard.createCursorKeys()
+        this.W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
+        this.A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+        this.S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        this.D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
 
-        this.cursors = this.input.keyboard.addKeys(
-            {
-                up: Phaser.Input.Keyboard.KeyCodes.W,
-                down: Phaser.Input.Keyboard.KeyCodes.S,
-                left: Phaser.Input.Keyboard.KeyCodes.A,
-                right: Phaser.Input.Keyboard.KeyCodes.D
-            });
-    }
-    createStars() {
-        const stars = this.physics.add.group({
-            key: STAR_KEY,
-            repeat: 11,
-            setXY: { x: 12, y: 0, stepX: 70 }
-        })
 
-        stars.children.iterate((child) => {
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
-        })
-
-        return stars
-    }
-    collectStar(player, star) {
-        star.disableBody(true, true)
-        this.scoreLabel.add(10)
-    }
-    createScoreLabel(x, y, score) {
-        const style = { fontSize: '32px', fill: '#000' }
-        const label = new ScoreLabel(this, x, y, score, style)
-
-        this.add.existing(label)
-
-        return label
     }
 
     update() {
-        if (this.cursors.left.isDown) {
+        if (this.W.isDown) {
+            this.player.setVelocityY(-160)
+        }
+        else if (this.S.isDown) {
+            this.player.setVelocityY(160)
+        }
+
+        else {
+            this.player.setVelocityY(0)
+        }
+        if (this.A.isDown) {
             this.player.setVelocityX(-160)
 
             this.player.anims.play('left', true)
         }
-        else if (this.cursors.right.isDown) {
+        else if (this.D.isDown) {
             this.player.setVelocityX(160)
 
             this.player.anims.play('right', true)
         }
-        else if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-160)
-            this.player.anims.play('right', true)
-        }
-        else if (this.cursors.down.isDown) {
-            this.player.setVelocityY(160)
-            this.player.anims.play('left', true)
-        }
         else {
             this.player.setVelocityX(0)
-            this.player.setVelocityY(0)
             this.player.anims.play('turn')
         }
     }
@@ -105,11 +84,14 @@ export default class GameScene extends Phaser.Scene {
     createPlatforms() {
         const platforms = this.physics.add.staticGroup()
 
-        platforms.create(400, 568, GROUND_KEY).setScale(2).refreshBody()
+        platforms.create(Math.random() * 800, Math.random() * 600, GROUND_KEY).setScale(2).refreshBody()
+        for (let i = 0; i < Math.floor(Math.random() * 6); i++) {//Temp solution
+            platforms.create(Math.random() * 800, Math.random() * 600, GROUND_KEY)
+        }
+        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
+        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
+        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
 
-        platforms.create(600, 400, GROUND_KEY)
-        platforms.create(50, 250, GROUND_KEY)
-        platforms.create(750, 220, GROUND_KEY)
 
         return platforms
     }
