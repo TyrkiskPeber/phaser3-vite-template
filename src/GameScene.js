@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import ScoreLabel from './ui/ScoreLabel'
 
 const GROUND_KEY = 'ground'
-const DUDE_KEY = 'dude'
+const PC_KEY = 'dude'
 const STAR_KEY = 'star'
 
 
@@ -17,13 +17,14 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('frame', )
         this.load.image('floor', 'assets/Steal.png')
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
 
-        this.load.spritesheet(DUDE_KEY,
-            'assets/dude.png',
+        this.load.spritesheet(PC_KEY,
+            'assets/PC.png',
             { frameWidth: 32, frameHeight: 48 }
         )
     }
@@ -97,25 +98,25 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createPlayer() {
-        const player = this.physics.add.sprite(100, 450, DUDE_KEY)
+        const player = this.physics.add.sprite(100, 450, PC_KEY)
         player.setCollideWorldBounds(true)
 
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1
         })
 
         this.anims.create({
             key: 'turn',
-            frames: [{ key: DUDE_KEY, frame: 4 }],
+            frames: [{ key: PC_KEY, frame: 4 }],
             frameRate: 20
         })
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 5, end: 8 }),
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 8 }),
             frameRate: 10,
             repeat: -1
         })
