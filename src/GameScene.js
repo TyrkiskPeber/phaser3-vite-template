@@ -18,27 +18,29 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('frame', )
-        this.load.image('floor', 'assets/Steal.png')
+        this.load.image('floor', 'assets/Cobble.png')
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
 
         this.load.spritesheet(PC_KEY,
             'assets/PC.png',
-            { frameWidth: 32, frameHeight: 48 }
+            { frameWidth: 56, frameHeight: 76 }
         )
     }
 
     create() {
+        this.add.image(0, 0, 'floor')
         this.add.image(100, 0, 'floor')
+        this.add.image(200, 0, 'floor')
+        this.add.image(300, 0, 'floor')
         this.add.image(400, 0, 'floor')
+        this.add.image(500, 0, 'floor')
+        this.add.image(600, 0, 'floor')
         this.add.image(700, 0, 'floor')
-        this.add.image(100, 300, 'floor')
-        this.add.image(400, 300, 'floor')
-        this.add.image(700, 300, 'floor')
-        this.add.image(100, 600, 'floor')
-        this.add.image(400, 600, 'floor')
-        this.add.image(700, 600, 'floor')
+        this.add.image(800, 0, 'floor')
+        this.add.image(900, 0, 'floor')
+        this.add.image(1000, 0, 'floor')
 
 
         const platforms = this.createPlatforms()
@@ -58,6 +60,8 @@ export default class GameScene extends Phaser.Scene {
     update() {
         if (this.W.isDown) {
             this.player.setVelocityY(-160)
+            
+            this.player.anims.play('WALKUP', true)
         }
         else if (this.S.isDown) {
             this.player.setVelocityY(160)
@@ -89,9 +93,6 @@ export default class GameScene extends Phaser.Scene {
         for (let i = 0; i < Math.floor(Math.random() * 6); i++) {//Temp solution
             platforms.create(Math.random() * 800, Math.random() * 600, GROUND_KEY)
         }
-        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
-        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
-        //platforms.create(Math.random()*800, Math.random()*600, GROUND_KEY)
 
 
         return platforms
@@ -103,23 +104,31 @@ export default class GameScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 0, end: 1 }),
             frameRate: 10,
             repeat: -1
         })
 
         this.anims.create({
             key: 'turn',
-            frames: [{ key: PC_KEY, frame: 4 }],
+            frames: [{ key: PC_KEY, frame: 2}],
             frameRate: 20
         })
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 8 }),
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 6 }),
             frameRate: 10,
             repeat: -1
         })
+
+        this.anims.create({
+            key: 'WALKUP',
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 6 }),
+            frameRate: 20,
+            repeat: -1
+        })
+
         return player
     }
 }
