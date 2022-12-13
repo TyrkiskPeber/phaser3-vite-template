@@ -1,9 +1,9 @@
 import Phaser from 'phaser'
-import ScoreLabel from './ui/ScoreLabel'
 
 const GROUND_KEY = 'ground'
 const PC_KEY = 'dude'
 const STAR_KEY = 'star'
+const ENEMY_KEY = 'enemy'
 
 
 export default class GameScene extends Phaser.Scene {
@@ -13,15 +13,19 @@ export default class GameScene extends Phaser.Scene {
         this.player = undefined
         this.cursors = undefined
         this.scoreLabel = undefined
-
+        this.enemy = undefined
+        this.gameOver = false
     }
 
     preload() {
-        this.load.image('frame', )
+        this.load.image('frame',)
         this.load.image('floor', 'assets/Cobble.png')
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
+        
+        this.load.spritesheet(ENEMY_KEY, 'assets/Goblin.png',
+        {frameWidth: 43, frameHeight: 60})
 
         this.load.spritesheet(PC_KEY,
             'assets/PC.png',
@@ -43,10 +47,13 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(1000, 0, 'floor')
 
 
-        const platforms = this.createPlatforms()
         this.player = this.createPlayer()
+        this.enemy = this.createEnemy()
 
-        this.physics.add.collider(this.player, platforms)
+        //physics
+        
+        this.physics.add.collider(this.player, this.enemy, this.enemyHit, null, this)
+
 
         this.cursors = this.input.keyboard.createCursorKeys()
         this.W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
@@ -56,11 +63,21 @@ export default class GameScene extends Phaser.Scene {
 
 
     }
-
     update() {
+        if (this.gameOver) {
+            return
+        }
+        this.playerMovment()
+        this.enemy.setVelocityX(-160)
+        this.enemyHit
+
+
+    }
+    //Movment and animations
+    playerMovment() {
         if (this.W.isDown) {
             this.player.setVelocityY(-160)
-            
+
             this.player.anims.play('WALKUP', true)
         }
         else if (this.S.isDown) {
@@ -85,19 +102,6 @@ export default class GameScene extends Phaser.Scene {
             this.player.anims.play('turn')
         }
     }
-
-    createPlatforms() {
-        const platforms = this.physics.add.staticGroup()
-
-        platforms.create(Math.random() * 800, Math.random() * 600, GROUND_KEY).setScale(2).refreshBody()
-        for (let i = 0; i < Math.floor(Math.random() * 6); i++) {//Temp solution
-            platforms.create(Math.random() * 800, Math.random() * 600, GROUND_KEY)
-        }
-
-
-        return platforms
-    }
-
     createPlayer() {
         const player = this.physics.add.sprite(100, 450, PC_KEY)
         player.setCollideWorldBounds(true)
@@ -111,13 +115,13 @@ export default class GameScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'turn',
-            frames: [{ key: PC_KEY, frame: 2}],
+            frames: [{ key: PC_KEY, frame: 2 }],
             frameRate: 20
         })
 
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 6 }),
+            frames: this.anims.generateFrameNumbers(PC_KEY, { start: 3, end: 4 }),
             frameRate: 10,
             repeat: -1
         })
@@ -131,4 +135,21 @@ export default class GameScene extends Phaser.Scene {
 
         return player
     }
+    createEnemy() {
+        const enemy = this.physics.add.sprite(500, 450, ENEMY_KEY)
+        enemy.setCollideWorldBounds(true)
+
+        return enemy
+    }
+    enemyHit(player, enemy)
+	{
+		this.physics.pause()
+
+		player.setTint(0xff0000)
+
+		player.anims.play('turn')
+
+		this.gameOver = true
+	}
+
 }
