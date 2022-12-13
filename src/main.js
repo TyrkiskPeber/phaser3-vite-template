@@ -4,7 +4,7 @@ import GameScene from './GameScene'
 
 const config = {
 	type: Phaser.AUTO,
-	width: 1280,
+	width: 1000,
 	height: 615,
 	physics: {
 		default: 'arcade',
