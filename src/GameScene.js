@@ -18,8 +18,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('frame',)
-        this.load.image('floor', 'assets/Cobble.png')
+
+        this.load.image('floor', 'assets/Cobble.png',)
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
@@ -35,16 +35,6 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
         this.add.image(0, 0, 'floor')
-        this.add.image(100, 0, 'floor')
-        this.add.image(200, 0, 'floor')
-        this.add.image(300, 0, 'floor')
-        this.add.image(400, 0, 'floor')
-        this.add.image(500, 0, 'floor')
-        this.add.image(600, 0, 'floor')
-        this.add.image(700, 0, 'floor')
-        this.add.image(800, 0, 'floor')
-        this.add.image(900, 0, 'floor')
-        this.add.image(1000, 0, 'floor')
 
 
         this.player = this.createPlayer()
@@ -71,7 +61,9 @@ export default class GameScene extends Phaser.Scene {
         //this.enemy.setVelocityX(-160)
         this.enemyMovment()
         this.enemyHit
-
+        if (this.gameOver) {
+            return
+        }
 
     }
     createPlayer() {
@@ -136,7 +128,7 @@ export default class GameScene extends Phaser.Scene {
             this.player.anims.play('turn')
         }
     }
-
+    //Enemy movment and animations
     createEnemy() {
         const enemy = this.physics.add.sprite(500, 450, ENEMY_KEY)
         enemy.setCollideWorldBounds(true)
@@ -149,6 +141,12 @@ export default class GameScene extends Phaser.Scene {
         })
 
         this.anims.create({
+            key: 'GAMEOVER',
+            frames: [{ key: ENEMY_KEY, frame: 1 }],
+            frameRate: 20
+        })
+
+        this.anims.create({
             key: 'Gob right',
             frames: this.anims.generateFrameNumbers(ENEMY_KEY, { start: 2, end: 3 }),
             frameRate: 10,
@@ -158,23 +156,23 @@ export default class GameScene extends Phaser.Scene {
         return enemy
     }
     enemyMovment() {
-        //checkWorldBounds()
-        if (this.enemy.setVelocityX(-160)) {
+        
+        if (this.enemy.setVelocityX(-170)) {
 
             this.enemy.anims.play('Gob left', true)
         }
         else {
-            this.enemy.setVelocityX(160)
             this.enemy.anims.play('Gob right', true)
         }
     }
+    //Rule that apply when touching enemy goblins
     enemyHit(player, enemy) {
         this.physics.pause()
 
         player.setTint(0xff0000)
 
         player.anims.play('turn')
-
+        this.enemy.anims.play('GAMEOVER')
         this.gameOver = true
     }
 
