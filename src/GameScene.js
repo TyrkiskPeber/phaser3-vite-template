@@ -19,7 +19,7 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
 
-        this.load.image('floor', 'assets/Cobble.png',)
+        this.load.image('floor', 'assets/fullcobble.png',)
         this.load.image(GROUND_KEY, 'assets/platform.png')
         this.load.image(STAR_KEY, 'assets/star.png')
         this.load.image('bomb', 'assets/bomb.png')
@@ -34,7 +34,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(0, 0, 'floor')
+        this.add.image(500,300, 'floor')
 
 
         this.player = this.createPlayer()
@@ -54,11 +54,7 @@ export default class GameScene extends Phaser.Scene {
 
     }
     update() {
-        if (this.gameOver) {
-            return
-        }
         this.playerMovment()
-        //this.enemy.setVelocityX(-160)
         this.enemyMovment()
         this.enemyHit
         if (this.gameOver) {
@@ -91,9 +87,9 @@ export default class GameScene extends Phaser.Scene {
         })
 
         this.anims.create({
-            key: 'WALKUP',
+            key: 'gåupp',
             frames: this.anims.generateFrameNumbers(PC_KEY, { start: 5, end: 6 }),
-            frameRate: 20,
+            frameRate: 10,
             repeat: -1
         })
 
@@ -104,76 +100,79 @@ export default class GameScene extends Phaser.Scene {
         if (this.W.isDown) {
             this.player.setVelocityY(-160)
 
-            this.player.anims.play('WALKUP', true)
-        }
-        else if (this.S.isDown) {
-            this.player.setVelocityY(160)
-        }
-
-        else {
-            this.player.setVelocityY(0)
+            this.player.anims.play('gåupp', true)
         }
         if (this.A.isDown) {
             this.player.setVelocityX(-160)
 
             this.player.anims.play('left', true)
         }
-        else if (this.D.isDown) {
+        if (this.D.isDown) {
             this.player.setVelocityX(160)
 
             this.player.anims.play('right', true)
         }
-        else {
+        if (this.S.isDown) {
+            this.player.setVelocityY(160)
+        }
+        if (this.W.isUp && this.S.isUp) {
+            this.player.setVelocityY(0)
+        }
+        if (this.A.isUp && this.D.isUp) {
             this.player.setVelocityX(0)
+        }
+        if (this.player.body.velocity.x == 0 && this.player.body.velocity.y == 0    ){
             this.player.anims.play('turn')
         }
     }
-    //Enemy movment and animations
-    createEnemy() {
-        const enemy = this.physics.add.sprite(500, 450, ENEMY_KEY)
-        enemy.setCollideWorldBounds(true)
+//Enemy movment and animations
+createEnemy() {
+    const enemy = this.physics.add.sprite(400, 450, ENEMY_KEY)
+    enemy.setCollideWorldBounds(true)
 
-        this.anims.create({
-            key: 'Gob left',
-            frames: this.anims.generateFrameNumbers(ENEMY_KEY, { start: 0, end: 1 }),
-            frameRate: 10,
-            repeat: -1
-        })
+    this.anims.create({
+        key: 'Gob left',
+        frames: this.anims.generateFrameNumbers(ENEMY_KEY, { start: 0, end: 1 }),
+        frameRate: 10,
+        repeat: -1
+    })
 
-        this.anims.create({
-            key: 'GAMEOVER',
-            frames: [{ key: ENEMY_KEY, frame: 1 }],
-            frameRate: 20
-        })
+    this.anims.create({
+        key: 'GAMEOVER',
+        frames: [{ key: ENEMY_KEY, frame: 1 }],
+        frameRate: 20
+    })
 
-        this.anims.create({
-            key: 'Gob right',
-            frames: this.anims.generateFrameNumbers(ENEMY_KEY, { start: 2, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        })
+    this.anims.create({
+        key: 'Gob right',
+        frames: this.anims.generateFrameNumbers(ENEMY_KEY, { start: 2, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    })
 
-        return enemy
+    return enemy
+}
+enemyMovment() {
+    this.physics.moveToObject(this.enemy, this.player, 160);
+
+    if (this.enemy.x > this.player.x) {
+
+        this.enemy.anims.play('Gob left', true)
     }
-    enemyMovment() {
-        
-        if (this.enemy.setVelocityX(-170)) {
-
-            this.enemy.anims.play('Gob left', true)
-        }
-        else {
-            this.enemy.anims.play('Gob right', true)
-        }
+    else {
+        this.enemy.anims.play('Gob right', true)
     }
-    //Rule that apply when touching enemy goblins
-    enemyHit(player, enemy) {
-        this.physics.pause()
+}
+//Rule that apply when touching enemy goblins
+enemyHit(player, enemy) {
+    this.physics.pause()
 
-        player.setTint(0xff0000)
+    player.setTint(0xff0000)
 
-        player.anims.play('turn')
-        this.enemy.anims.play('GAMEOVER')
-        this.gameOver = true
-    }
+    player.anims.play('turn')
+    this.enemy.anims.play('GAMEOVER', true)
+    this.add.text(300, this.cameras.main.midPoint.y, 'Game Over', { fontSize: '32px' })
+    this.gameOver = true
+}
 
 }
